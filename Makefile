@@ -1,6 +1,10 @@
 
 # Dependencies and directories. --------------------------------------------------------
 
+# SAC and GMT5 may need their own dependencies (ncursur, dcw, gshhg, netcdf, etc.)
+# Those dependencies can be resolved by package management softwares.
+
+
 # 1. SAC
 
 #   request and download from http://ds.iris.edu/ds/nodes/dmc/forms/sac/, compile and install to some directory.
@@ -50,6 +54,7 @@ SACDIR    := /usr/local/sac/
 GMT5DIR   := /usr/local/Cellar/gmt@5/5.4.5_4
 
 
+# done Makefile editing, save and exit, then execute "make".
 # --------------------------------------------------------------------------------------
 
 
