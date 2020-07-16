@@ -1,6 +1,6 @@
 # Download, Compile, Run
 
-Download.
+Download:
 
 ```
 $ git clone --recursive https://github.com/shuleyu/waterlevelDeconvolution.git
@@ -21,7 +21,7 @@ $ vim Makefile
 $ make
 ```
 
-Run, modify "inputFileDeconParameters.txt" and run.
+Run: modify "inputFileDeconParameters.txt" and run.
 
 ```
 ./DeconParameters.txt inputFileDeconParameters.txt
