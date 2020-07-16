@@ -1,0 +1,10 @@
+runMarker                       Event_2012.12.21.22.28.08.80
+
+outputDir                       /Users/shuleyu/Documents/Research/t010.SamDecon/ExamplePcPevents/Event_2012.12.21.22.28.08.80/results
+
+sourceSACFile                   /Users/shuleyu/Documents/Research/t010.SamDecon/ExamplePcPevents/Event_2012.12.21.22.28.08.80/P.sac
+signalSACFile                   /Users/shuleyu/Documents/Research/t010.SamDecon/ExamplePcPevents/Event_2012.12.21.22.28.08.80/PcP.sac
+
+waterLevels(%)                  0.0001  0.001  0.01  0.05  0.1   0.25  0.5
+gaussianHalfHeightWidth(sec.)   0.05    0.1    0.2   0.35  0.5   1     2    3     4     5
+highPassFilterCorner(Hz)        0.001   0.005  0.01  0.02  0.03  0.05  0.1  0.15

@@ -4,8 +4,12 @@
 # SAC and GMT5 may need their own dependencies (ncursur, dcw, gshhg, netcdf, etc.)
 # Those dependencies can be resolved by package management softwares.
 
+# 1. ghostscript.
 
-# 1. SAC
+#   (recommended) use package management softwares (apt-get, dnf, yum, brew, macport) search/install "ghostscript".
+
+
+# 2. SAC
 
 #   request and download from http://ds.iris.edu/ds/nodes/dmc/forms/sac/, compile and install to some directory.
 #   a copy can be found in ./Dependencies/
@@ -13,8 +17,11 @@
 # if configured with "$ ./configure --prefix=/usr/local/sac", then the directory will be:
 SACDIR    := /usr/local/sac/
 
+#SACDIR    := [your directory]
 
-# 2. fftw3. (version 3.3.8)
+
+
+# 3. fftw3. (version 3.3.8)
 
 #   A. (recommended) use package management softwares (apt-get, dnf, yum, brew, macport) search/install "fftw3".
 #
@@ -27,7 +34,7 @@ SACDIR    := /usr/local/sac/
 #
 
 
-# 3. GMT5. (version 5.4.5)
+# 4. GMT5. (version 5.4.5)
 
 #   A. use package management softwares to install gmt5:
 #      
@@ -53,16 +60,18 @@ SACDIR    := /usr/local/sac/
 # if installed using Homebrew, by default the directory is:
 GMT5DIR   := /usr/local/Cellar/gmt@5/5.4.5_4
 
+#GMT5DIR   := [your directory]
 
-# done Makefile editing, save and exit, then execute "make".
+
+# done Makefile editing, save and exit, finger crossed and execute "make".
 # --------------------------------------------------------------------------------------
 
 
 
 COMP      := c++ -std=c++14 -Wall
 OUTDIR    := .
-INCDIR    := -I./CPP-Library-Headers -I$(SACDIR)/include -I$(GMT5DIR)/include
-LIBDIR    :=  -L$(SACDIR)/lib -L$(GMT5DIR)/lib
+INCDIR    := -I$(SACDIR)/include -I$(GMT5DIR)/include -I./CPP-Library-Headers 
+LIBDIR    :=  -L$(SACDIR)/lib -L$(GMT5DIR)/lib -L$(GMT5DIR)/lib64
 LIBS      := -lgmt -lfftw3 -lsac -lsacio -lm
 
 

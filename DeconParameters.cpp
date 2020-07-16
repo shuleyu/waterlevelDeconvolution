@@ -10,28 +10,16 @@
 #include<GMTPlotSignal.hpp>
 #include<SACSignals.hpp>
 #include<Float2String.hpp>
+#include<ShellExec.hpp>
 
 using namespace std;
 
-// Inputs. ------------------------
+// plot parameters. ------------------------
 
-double plotXMin = -40, plotXMax = 40;
+const double plotXMin = -40, plotXMax = 40, plotYMin = -1.2, plotYMax = 1.2;
 
-const string plotRange = "-R/" + to_string(plotXMin) + "/" + to_string(plotXMax) + "/-1.2/1.2";
+// -----------------------------------------
 
-const vector<double> waterLevels{0.0001, 0.001, 0.01, 0.05, 0.1, 0.25, 0.5};
-
-const vector<double> gaussianHalfHeightWidth{0.05, 0.1, 0.2, 0.35, 0.5, 1, 2, 3, 4, 5};
-
-const vector<double> highPassFilterCorner{0.001, 0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.15};
-
-const string eventName = "Event_2012.12.21.22.28.08.80";
-const string signalSACFile = "/Users/shuleyu/Documents/Research/t010.SamDecon/ExamplePcPevents/" + eventName + "/PcP.sac";
-const string sourceSACFile = "/Users/shuleyu/Documents/Research/t010.SamDecon/ExamplePcPevents/" + eventName + "/P.sac";
-
-// Outputs. ------------------------
-
-const string outputSACFile = "/Users/shuleyu/Documents/Research/t010.SamDecon/ExamplePcPevents/" + eventName + "/decon.sac";
 
 double widthToSigma(double halfHeightWidth) {
 
@@ -39,7 +27,109 @@ double widthToSigma(double halfHeightWidth) {
 }
 
 
-int main(){
+int main(int argc, char * argv[]){
+
+    if (argc != 2) {
+
+        cout << "usage: ./DeconParameters.out [parameterFile]\n";
+        cout << "\n";
+        cout << "The first column in [parameterFile] is an explanatory key word.\n";
+        cout << "The rest columns are according paremeter(s).\n";
+        cout << "The outputs is one figure [runMarker].pdf and several sac files [runMarker_wl_...].sac within the \"outputDir\" directory." << endl;
+        return 1;
+    }
+
+
+    // read input file.
+
+    auto waterLevels = vector<double> ();
+    auto gaussianHalfHeightWidth = vector<double> ();
+    auto highPassFilterCorner = vector<double> ();
+
+    string signalSACFile = "", sourceSACFile = "", outputDir = "", runMarker = "";
+
+
+    ifstream fpin;
+
+    string inputFile(argv[1]);
+
+    fpin.open(inputFile);
+
+    if (!fpin.is_open()) {
+
+        throw runtime_error("Can't open file: " + inputFile);
+    }
+
+    string line, keyWord;
+    while (getline(fpin, line)) {
+
+        if (line == "") {
+
+            continue;
+        }
+
+        stringstream ss(line);
+        double x;
+
+        ss >> keyWord;
+
+        if (keyWord == "runMarker") {
+
+            ss >> runMarker;
+        }
+        else if (keyWord == "outputDir"){
+
+            ss >> outputDir;
+        }
+        else if (keyWord == "sourceSACFile"){
+
+            ss >> sourceSACFile;
+        }
+        else if (keyWord == "signalSACFile"){
+
+            ss >> signalSACFile;
+        }
+        else if (keyWord == "waterLevels(%)"){
+
+            while (ss >> x) {
+
+                waterLevels.push_back(x);
+            }
+        }
+        else if (keyWord == "gaussianHalfHeightWidth(sec.)"){
+
+            while (ss >> x) {
+
+                gaussianHalfHeightWidth.push_back(x);
+            }
+        }
+        else if (keyWord == "highPassFilterCorner(Hz)"){
+
+            while (ss >> x) {
+
+                highPassFilterCorner.push_back(x);
+            }
+        }
+        else {
+
+            cerr << inputFile + "format error." << endl;
+            return 1;
+        }
+    }
+    fpin.close();
+
+    if (signalSACFile == "" || sourceSACFile == "" || outputDir == "" || runMarker == "" || waterLevels.empty() || gaussianHalfHeightWidth.empty() || highPassFilterCorner.empty()){
+
+        cerr << inputFile + "format error." << endl;
+        return 1;
+    }
+    else {
+
+        ShellExec("mkdir -p " + outputDir);
+    }
+
+
+    // WORK BEGIN.
 
     SACSignals signalSAC(vector<string> {signalSACFile});
     SACSignals sourceSAC(vector<string> {sourceSACFile});
@@ -65,10 +155,11 @@ int main(){
 
     const double YSIZE = 1 + 2.5 * gaussianHalfHeightWidth.size(), XSIZE = 1 + 6 * (1 + highPassFilterCorner.size());
     string YP = "";
-    string outfile = ""; 
+    string outfile = "";
 
 
     // plot difference waterlevel result (different pages).
+    const string plotRange = "-R/" + to_string(plotXMin) + "/" + to_string(plotXMax) + "/" + to_string(plotYMin) + "/" + to_string(plotYMax);
 
     for (auto wl: waterLevels){
 
@@ -94,7 +185,7 @@ int main(){
         GMT::MoveReferencePoint(outfile,"-Xf1i " + YP);
 
         vector<GMT::Text> texts;
-        texts.push_back(GMT::Text(0, 0, eventName, 30, "CM"));
+        texts.push_back(GMT::Text(0, 0, runMarker, 30, "CM"));
         texts.push_back(GMT::Text(0, -1, "water level = " + Float2String(wl, 4), 30, "CM"));
         GMT::pstext(outfile, texts, "-JX5i/1.5i " + plotRange + " -N -O -K");
 //         GMT::pstext(outfile, texts, "-JX5i/1.5i " + plotRange + " -Bxa10f2 -Bya0.5f0.1 -N -O -K");
@@ -109,6 +200,8 @@ int main(){
 
             for (auto highPassCorner: highPassFilterCorner) {
 
+
+                // decon.
                 auto DeconResult = signalTrace;
                 DeconResult.WaterLevelDecon(sourceTrace, wl);
                 DeconResult.FindPeakAround(0, 10, true);
@@ -121,7 +214,15 @@ int main(){
                 DeconResult.ShiftTimeReferenceToPeak();
                 DeconResult.NormalizeToSignal();
 
+                // output to sac.
+                auto mData = signalSAC.GetMData()[0];
+                mData.stnm = "PcPDecon";
 
+                SACSignals outSAC({DeconResult}, {mData});
+                outSAC.OutputToSAC(outputDir + "/" + runMarker + "_wl_" + Float2String(wl, 4) + "_gauss_" + Float2String(gaussianWidth, 4) + "_hp_" + Float2String(highPassCorner, 4));
+
+
+                // plot.
                 string XP = "-Xf" + to_string(7 + XCnt * 5 + XCnt) + "i";
                 string YP = "-Yf" + to_string(YSIZE - (YCnt + 1) * 2.5) + "i";
                 GMT::MoveReferencePoint(outfile, XP + " " + YP);
@@ -138,7 +239,7 @@ int main(){
 
                     texts.push_back(GMT::Text(plotXMin + (plotXMax - plotXMin) * 0.02, 1.4, "HighPass = " + Float2String(highPassCorner, 3) + " Hz", 15, "LB"));
                 }
-                
+
                 GMT::pstext(outfile, texts, "-JX5i/1.5i " + plotRange + " -N -O -K");
 
                 ++XCnt;
@@ -148,6 +249,6 @@ int main(){
     }
 
     GMT::SealPlot(outfile);
-    GMT::ps2pdf(outfile, __FILE__);
+    GMT::ps2pdf(outfile, outputDir + "/" + runMarker, true, true);
     return 0;
 }
