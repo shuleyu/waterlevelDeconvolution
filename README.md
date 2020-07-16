@@ -24,7 +24,7 @@ $ make
 ### Run: modify "inputFileDeconParameters.txt" and run.
 
 ```
-./DeconParameters.txt inputFileDeconParameters.txt
+./DeconParameters.out inputFileDeconParameters.txt
 ```
 
 ### Result (for the sample inputFileDeconParameters.txt):
