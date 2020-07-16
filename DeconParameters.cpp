@@ -40,7 +40,7 @@ int main(int argc, char * argv[]){
     }
 
 
-    // read input file.
+    // read input file. ----------------------------------------------------------------------------
 
     auto waterLevels = vector<double> ();
     auto gaussianHalfHeightWidth = vector<double> ();
@@ -129,8 +129,10 @@ int main(int argc, char * argv[]){
     }
 
 
-    // WORK BEGIN.
+    // WORK BEGIN. ---------------------------------------------------------------------------------
 
+
+    // read sac files.
     SACSignals signalSAC(vector<string> {signalSACFile});
     SACSignals sourceSAC(vector<string> {sourceSACFile});
 
@@ -139,16 +141,23 @@ int main(int argc, char * argv[]){
     sourceSAC.FindPeakAround(25, 10, true);
     sourceSAC.NormalizeToGlobal();
     sourceSAC.ShiftTimeReferenceToPeak();
-    sourceSAC.HannTaper();
+    sourceSAC.HannTaper(10);
 
     signalSAC.FindPeakAround(25, 10, true);
     signalSAC.NormalizeToGlobal();
     signalSAC.ShiftTimeReferenceToPeak();
-    signalSAC.HannTaper();
+    signalSAC.HannTaper(10);
 
 
     auto sourceTrace = sourceSAC.GetData()[0];
     auto signalTrace = signalSAC.GetData()[0];
+
+
+    // t* the source.
+//     sourceTrace = sourceTrace.Tstar(0.8);
+//     sourceTrace.FindPeakAround(0, 5, true);
+//     sourceTrace.ShiftTimeReferenceToPeak();
+//     sourceTrace.NormalizeToSignal();
 
 
     // process and plot.
@@ -158,7 +167,7 @@ int main(int argc, char * argv[]){
     string outfile = "";
 
 
-    // plot difference waterlevel result (different pages).
+    // plot difference waterlevel results on different pages.
     const string plotRange = "-R/" + to_string(plotXMin) + "/" + to_string(plotXMax) + "/" + to_string(plotYMin) + "/" + to_string(plotYMax);
 
     for (auto wl: waterLevels){
@@ -188,8 +197,6 @@ int main(int argc, char * argv[]){
         texts.push_back(GMT::Text(0, 0, runMarker, 30, "CM"));
         texts.push_back(GMT::Text(0, -1, "water level = " + Float2String(wl, 4), 30, "CM"));
         GMT::pstext(outfile, texts, "-JX5i/1.5i " + plotRange + " -N -O -K");
-//         GMT::pstext(outfile, texts, "-JX5i/1.5i " + plotRange + " -Bxa10f2 -Bya0.5f0.1 -N -O -K");
-
 
 
         int YCnt = 0;
@@ -214,7 +221,8 @@ int main(int argc, char * argv[]){
                 DeconResult.ShiftTimeReferenceToPeak();
                 DeconResult.NormalizeToSignal();
 
-                // output to sac.
+
+                // output to sac files.
                 auto mData = signalSAC.GetMData()[0];
                 mData.stnm = "PcPDecon";
 
