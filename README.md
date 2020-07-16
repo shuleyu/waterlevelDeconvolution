@@ -30,5 +30,5 @@ $ make
 ### Result (for the sample inputFileDeconParameters.txt):
 
 ```
-ls ./ExamplePcPevents/Event\_2012.12.21.22.28.08.80/results
+ls ./ExamplePcPevents/Event_2012.12.21.22.28.08.80/results
 ```
