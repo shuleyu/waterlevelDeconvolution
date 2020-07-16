@@ -33,9 +33,9 @@ int main(int argc, char * argv[]){
 
         cout << "usage: ./DeconParameters.out [parameterFile]\n";
         cout << "\n";
-        cout << "The first column in [parameterFile] is an explanatory key word.\n";
-        cout << "The rest columns are according paremeter(s).\n";
-        cout << "The outputs is one figure [runMarker].pdf and several sac files [runMarker_wl_...].sac within the \"outputDir\" directory." << endl;
+        cout << "The first column in [parameterFile] is an explanatory key word (Can't be modified).\n";
+        cout << "The rest columns are according paremeter(s), separated by white space(s)\n";
+        cout << "The outputs is one figure [runMarker].pdf and several sac files [runMarker_wl_...].sac under the [outputDir] directory." << endl;
         return 1;
     }
 
@@ -112,7 +112,7 @@ int main(int argc, char * argv[]){
         }
         else {
 
-            cerr << inputFile + "format error." << endl;
+            cerr << inputFile + " format error." << endl;
             return 1;
         }
     }
@@ -120,7 +120,7 @@ int main(int argc, char * argv[]){
 
     if (signalSACFile == "" || sourceSACFile == "" || outputDir == "" || runMarker == "" || waterLevels.empty() || gaussianHalfHeightWidth.empty() || highPassFilterCorner.empty()){
 
-        cerr << inputFile + "format error." << endl;
+        cerr << inputFile + " format error." << endl;
         return 1;
     }
     else {

@@ -1,6 +1,6 @@
 # Download, Compile, Run
 
-## Download:
+### Download:
 
 ```
 $ git clone --recursive https://github.com/shuleyu/waterlevelDeconvolution.git
@@ -14,16 +14,18 @@ $ git submodule update --init --recursive
 ```
 
 
-## Compile: modify Makefile (instructions are in the file) then compile.
+### Compile: modify Makefile (instructions are in the file) then compile.
 
 ```
 $ vim Makefile
 $ make
 ```
 
-## Run: modify "inputFileDeconParameters.txt" and run.
+### Run: modify "inputFileDeconParameters.txt" and run.
 
 ```
 ./DeconParameters.txt inputFileDeconParameters.txt
 ```
 
+#### Result (for the sample inputFileDeconParameters.txt):
+ls ./ExamplePcPevents/Event\_2012.12.21.22.28.08.80/results
