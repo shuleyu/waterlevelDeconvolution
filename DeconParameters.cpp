@@ -170,6 +170,10 @@ int main(int argc, char * argv[]){
     // plot difference waterlevel results on different pages.
     const string plotRange = "-R/" + to_string(plotXMin) + "/" + to_string(plotXMax) + "/" + to_string(plotYMin) + "/" + to_string(plotYMax);
 
+    const string outputTableFile = outputDir + "/" + runMarker + ".table.txt";
+    ofstream fpout(outputTableFile);
+    fpout << "WaterLevel(%)    GaussianHalfHeightWidth(sec.)    highPassFilterCorner(Hz)    SACFile" << endl;
+
     for (auto wl: waterLevels){
 
         if (outfile == "") {
@@ -227,7 +231,9 @@ int main(int argc, char * argv[]){
                 mData.stnm = "PcPDecon";
 
                 SACSignals outSAC({DeconResult}, {mData});
-                outSAC.OutputToSAC(outputDir + "/" + runMarker + "_wl_" + Float2String(wl, 4) + "_gauss_" + Float2String(gaussianWidth, 4) + "_hp_" + Float2String(highPassCorner, 4));
+                string outputFileName = runMarker + "_wl_" + Float2String(wl, 4) + "_gauss_" + Float2String(gaussianWidth, 4) + "_hp_" + Float2String(highPassCorner, 4);
+                outSAC.OutputToSAC(outputDir + "/" + outputFileName);
+                fpout << wl << " " << gaussianWidth << " " << highPassCorner << " " << outputFileName + ".sac" << endl;
 
 
                 // plot.
@@ -255,6 +261,7 @@ int main(int argc, char * argv[]){
             ++YCnt;
         }
     }
+    fpout.close();
 
     GMT::SealPlot(outfile);
     GMT::ps2pdf(outfile, outputDir + "/" + runMarker, true, true);

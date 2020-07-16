@@ -1,4 +1,4 @@
-runMarker                       Event_2012.12.21.22.28.08.80
+runMarker                       testRun
 
 outputDir                       /Users/shuleyu/Documents/Research/t010.SamDecon/ExamplePcPevents/Event_2012.12.21.22.28.08.80/results
 
